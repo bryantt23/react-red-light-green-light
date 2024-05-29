@@ -21,11 +21,8 @@ function GreenLightRedLight() {
   useEffect(() => {
     return () => {
       clearInterval(interval.current)
-      interval.current = null
       clearTimeout(timeout.current)
-      timeout.current = null
       clearTimeout(colorTimeout.current)
-      colorTimeout.current = null
     }
   }, [])
 
@@ -33,17 +30,13 @@ function GreenLightRedLight() {
     if (timeLeft <= 0) {
       setGameState(GameStates.GAME_OVER)
       clearInterval(interval.current)
-      interval.current = null
       clearTimeout(timeout.current)
-      timeout.current = null
       clearTimeout(colorTimeout.current)
       colorTimeout.current = null
     }
     else if (gameState === GameStates.GAME_OVER) {
       clearInterval(interval.current)
-      interval.current = null
       clearTimeout(timeout.current)
-      timeout.current = null
       clearTimeout(colorTimeout.current)
       colorTimeout.current = null
     }
@@ -62,6 +55,7 @@ function GreenLightRedLight() {
     setCount(0);
     setTimeLeft(7)
     setPlayerWins(false)
+    setRedBox(true)
     setGameState(GameStates.ACTIVE_GAME)
 
     timeout.current = setTimeout(() => {
