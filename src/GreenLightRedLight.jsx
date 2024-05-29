@@ -1,29 +1,75 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 const GameStates = {
   PRE_GAME: 'preGame',
   ACTIVE_GAME: 'activeGame',
   GAME_OVER: 'gameOver'
 }
+function getRandomTime(min = 0.5, max = 2) {
+  return (Math.random() * (max - min) + min) * 1000; // Convert seconds to milliseconds
+}
+
 function GreenLightRedLight() {
   const [gameState, setGameState] = useState(GameStates.PRE_GAME)
   const [count, setCount] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(7000)
+  const [timeLeft, setTimeLeft] = useState(7)
   const [playerWins, setPlayerWins] = useState(false)
+  const [redBox, setRedBox] = useState(true)
   const timeout = useRef(null)
   const interval = useRef(null)
+  const colorTimeout = useRef(null)
 
-  const startGame = () => {
-    timeout.current = setTimeout(() => {
-      setGameState(GameStates.ACTIVE_GAME)
+  useEffect(() => {
+    return () => {
       clearInterval(interval.current)
       interval.current = null
       clearTimeout(timeout.current)
       timeout.current = null
+      clearTimeout(colorTimeout.current)
+      colorTimeout.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setGameState(GameStates.GAME_OVER)
+      clearInterval(interval.current)
+      interval.current = null
+      clearTimeout(timeout.current)
+      timeout.current = null
+      clearTimeout(colorTimeout.current)
+      colorTimeout.current = null
+    }
+    else if (gameState === GameStates.GAME_OVER) {
+      clearInterval(interval.current)
+      interval.current = null
+      clearTimeout(timeout.current)
+      timeout.current = null
+      clearTimeout(colorTimeout.current)
+      colorTimeout.current = null
+    }
+    else if (gameState === GameStates.ACTIVE_GAME) {
+      if (colorTimeout.current === null) {
+        const randomTime = getRandomTime()
+        colorTimeout.current = setTimeout(() => {
+          setRedBox(prev => !prev)
+          colorTimeout.current = null
+        }, randomTime)
+      }
+    }
+  }, [timeLeft, gameState])
+
+  const startGame = () => {
+    setCount(0);
+    setTimeLeft(7)
+    setPlayerWins(false)
+    setGameState(GameStates.ACTIVE_GAME)
+
+    timeout.current = setTimeout(() => {
     }, 7000)
+
     interval.current = setInterval(() => {
       setTimeLeft(prev => prev - 1)
     }, 1000)
-
   }
 
   // Write your game here
@@ -35,11 +81,12 @@ function GreenLightRedLight() {
     </div>
     <div>
       <h3>Score: {count}</h3>
+      redbox:  {redBox ? "red" : "green"}
+      <div style={{ height: 100, width: 100, backgroundColor: `${redBox ? "red" : "green"}` }}></div>
       <div>
         {gameState === GameStates.GAME_OVER && (playerWins ? "Player wins" : "Player loses")}
       </div>
     </div>
-
   </div>
 }
 
