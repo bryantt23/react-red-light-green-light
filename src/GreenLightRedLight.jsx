@@ -7,7 +7,7 @@ const GameStates = {
 function getRandomTime(min = 0.5, max = 2) {
   return (Math.random() * (max - min) + min) * 1000; // Convert seconds to milliseconds
 }
-
+const TARGET_COUNT = 3
 function GreenLightRedLight() {
   const [gameState, setGameState] = useState(GameStates.PRE_GAME)
   const [count, setCount] = useState(0)
@@ -72,6 +72,20 @@ function GreenLightRedLight() {
     }, 1000)
   }
 
+  const handleBoxClick = () => {
+    if (redBox) {
+      setGameState(GameStates.GAME_OVER)
+      setPlayerWins(false)
+    }
+    else {
+      if (count === TARGET_COUNT - 1) {
+        setGameState(GameStates.GAME_OVER)
+        setPlayerWins(true)
+      }
+      setCount(prev => prev + 1)
+    }
+  }
+
   // Write your game here
   return <div>
     {gameState}
@@ -81,8 +95,9 @@ function GreenLightRedLight() {
     </div>
     <div>
       <h3>Score: {count}</h3>
-      redbox:  {redBox ? "red" : "green"}
-      <div style={{ height: 100, width: 100, backgroundColor: `${redBox ? "red" : "green"}` }}></div>
+      <div
+        onClick={handleBoxClick}
+        style={{ height: 100, width: 100, backgroundColor: `${redBox ? "red" : "green"}` }}></div>
       <div>
         {gameState === GameStates.GAME_OVER && (playerWins ? "Player wins" : "Player loses")}
       </div>
