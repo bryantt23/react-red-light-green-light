@@ -1,3 +1,51 @@
+import { useState, useRef } from 'react'
+const GameStates = {
+  PRE_GAME: 'preGame',
+  ACTIVE_GAME: 'activeGame',
+  GAME_OVER: 'gameOver'
+}
+function GreenLightRedLight() {
+  const [gameState, setGameState] = useState(GameStates.PRE_GAME)
+  const [count, setCount] = useState(0)
+  const [timeLeft, setTimeLeft] = useState(7000)
+  const [playerWins, setPlayerWins] = useState(false)
+  const timeout = useRef(null)
+  const interval = useRef(null)
+
+  const startGame = () => {
+    timeout.current = setTimeout(() => {
+      setGameState(GameStates.ACTIVE_GAME)
+      clearInterval(interval.current)
+      interval.current = null
+      clearTimeout(timeout.current)
+      timeout.current = null
+    }, 7000)
+    interval.current = setInterval(() => {
+      setTimeLeft(prev => prev - 1)
+    }, 1000)
+
+  }
+
+  // Write your game here
+  return <div>
+    {gameState}
+    <div>
+      <p>{gameState === GameStates.ACTIVE_GAME && `Time left: ${timeLeft}s`}</p>
+      {(gameState === GameStates.PRE_GAME || gameState === GameStates.GAME_OVER) && <button onClick={startGame}>Start Game</button>}
+    </div>
+    <div>
+      <h3>Score: {count}</h3>
+      <div>
+        {gameState === GameStates.GAME_OVER && (playerWins ? "Player wins" : "Player loses")}
+      </div>
+    </div>
+
+  </div>
+}
+
+export default GreenLightRedLight;
+
+
 /*
 Plan
 game will have 3 states
@@ -21,10 +69,3 @@ gameOver
   make the game 7 seconds & make it a random length between .5 and 1.5 seconds
   need 3 clicks
 */
-
-function GreenLightRedLight() {
-  // Write your game here
-  return "GreenLightRedLight"
-}
-
-export default GreenLightRedLight;
